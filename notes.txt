@@ -1,0 +1,80 @@
+Designs:
+
+Circle 1: 	http://prcweb.co.uk/circularheatchart/
+Circle 2: 	http://bl.ocks.org/nicgirault/777c8f74aaf95e46d7e7
+Sunburst: 	http://bl.ocks.org/wizicer/f662a0b04425fc0f7489
+Bubble 1: 	http://bl.ocks.org/phuonghuynh/54a2f97950feadb45b07
+Bubble 2:	https://bl.ocks.org/mbostock/4063269
+Radar 1: 	http://bl.ocks.org/bbest/2de0e25d4840c68f2db1
+Radar 2:  	http://bl.ocks.org/davidwclin/ad5d13db260caeffe9b3
+Radar 3:  	http://bl.ocks.org/nbremer/21746a9668ffdf6d8242
+
+Visualizations:
+Number of people with particular skill (r1) --> demo1
+{
+ 'skill': 'skill1',
+ 'context': 'overall' | 'group',
+ 'targetname': 'group1',
+ 'levels': [
+	{
+        'id': 0,
+        'name': 'level_name1',
+        'value': 60
+    },
+    {
+        'id': 1,
+        'name': 'level_name2',
+        'value': 100
+    }
+ ]}
+
+Strenghts of X [flat list of skills] (b2) --> demo2
+{
+ 'context': 'personal' | 'group' | 'overall',
+ 'targetname': '',
+ 'skills': [
+	{'name': 'skill_name1', 'value': 1},
+	{'name': 'skill_name2', 'value': 5}
+ ]}
+ 
+Strenghts comparison [compare group of skills] (r3) --> demo3
+{
+ 'context': 'personal' | 'group',
+ 'targetnames': ['target1', 'target2', 'target3'],
+ 'skill_group': 'skill_group1',
+ 'skills': [
+	{'name': 'skill_name1', 'values': [1,3,5]},
+	{'name': 'skill_name2', 'values': [5,5,5]},
+    {'name': 'skill_name3', 'values': [1,3,3]},
+    {'name': 'skill_name4', 'values': [4,5,5]},
+    {'name': 'skill_name5', 'values': [1,1,2]},
+    {'name': 'skill_name6', 'values': [5,3,1]},
+ ]}
+
+Evolution of individual skillset (s)
+ 
+Skill tree
+{'skilltree': [
+	'skill_domain1' : [{
+		'skill_group1' : ['skill_name11','skill_name12'],
+		'skill_group2' : ['skill_name21','skill_name22'],
+	}],
+	'skill_domain2'
+ ]}
+
+Filters:
+Overall
+By group of people
+By group of skills
+
+Concepts:
+Person
+Person group
+Skill level
+Skill group
+Skill history
+
+Contexts:
+Overall
+Group
+Personal
