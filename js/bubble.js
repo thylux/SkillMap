@@ -1,25 +1,31 @@
-function bubbleInit(graph, data) {
-    let universe = 0, i = 0;
+function BubbleChart(id, data, options) {
+    let cfg = {
+	 diameter: 450,
+	 scale: 18,
+	 format: d3.format(",d"),
+	 color: d3.scale.category20()
+	};
+	
+	//Put all of the options into a variable called cfg
+	if('undefined' !== typeof options){
+	  for(let i in options){
+		if('undefined' !== typeof options[i]){ cfg[i] = options[i]; }
+	  }//for i
+	}//if
     
-    let diameter = 450; //$(document).height() / 2 - 100,
-        scale = 18  ,
-        format = d3.format(",d");
-        // to use if we need to classify skills
-        //color = d3.scale.category20c();
-
+    let universe = 0;
     let bubble = d3.layout.pack()
         .sort(null)
-        .size([diameter, diameter]);
+        .size([cfg.diameter, cfg.diameter]);
     
     data.skills.forEach(function(d) {
-        d.id = i++;
+        d.id = universe++;
         d.color = rainbow(data.skills.length, i);
-        universe++;
     });
     
-    let svg = d3.select(graph)
-        .attr("width", diameter)
-        .attr("height", diameter)
+    let svg = d3.select(id)
+        .attr("width", cfg.diameter)
+        .attr("height", cfg.diameter)
         .attr("class", "bubble");
         
     svg.append("svg:text")
@@ -36,14 +42,14 @@ function bubbleInit(graph, data) {
             .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
 
     node.append("title")
-        .text(function(d) { return d.name + ": " + format(d.value); });
+        .text(function(d) { return d.name + ": " + cfg.format(d.value); });
 
     node.append("circle")
-        .attr("r", function(d) { return d.value * scale; })
-        .style("fill", function(d) { return rainbow(universe, d.id); });
+        .attr("r", function(d) { return d.value * cfg.scale; })
+        .style("fill", function(d) { return cfg.color(d.id); /*rainbow(universe, d.id);*/ });
 
     node.append("text")
         .attr("dy", ".3em")
         .style("text-anchor", "middle")
-        .text(function(d) { return d.name.substring(0, d.value * scale / 3); });
+        .text(function(d) { return d.name.substring(0, d.value * cfg.scale / 3); });
 };

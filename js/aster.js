@@ -1,11 +1,6 @@
 /*
- * FROM http://bl.ocks.org/bbest/2de0e25d4840c68f2db1
+ * Adapted from http://bl.ocks.org/bbest/2de0e25d4840c68f2db1
  */
-
-var width = 300,
-    height = 300,
-    radius = (Math.min(width, height) / 2) * 0.8,
-    innerRadius = 0.3 * radius;
 
 var pie = d3.layout.pie()
     .sort(null)
@@ -18,42 +13,58 @@ var tip = d3.tip()
     return d.data.name + ": <span style='color:orangered'>" + d.data.value + "</span>";
   });
 
-var arc = d3.svg.arc()
-  .innerRadius(innerRadius);
-
-var outlineArc = d3.svg.arc()
-        .innerRadius(innerRadius)
-        .outerRadius(radius);
-
-function asterInit(graph, data) {
+function AsterChart(id, data, options) {
+    let cfg = {
+	 width: 300,
+	 height: 300,
+	 radius: (300 / 2) * 0.8,
+     innerRadius: (300 / 2) * 0.24,
+	 color: d3.scale.category10()
+	};
+	
+	//Put all of the options into a variable called cfg
+	if('undefined' !== typeof options){
+	  for(let i in options){
+		if('undefined' !== typeof options[i]){ cfg[i] = options[i]; }
+	  }//for i
+	}//if
+    
     let i = 0;
     let universe = 0, max = 0;
     
+    let arc = d3.svg.arc()
+        .innerRadius(cfg.innerRadius);
+    var outlineArc = d3.svg.arc()
+        .innerRadius(cfg.innerRadius)
+        .outerRadius(cfg.radius);
+    
     data.levels.forEach(function(d) {
         d.color = rainbow(data.levels.length, i);
+        //d.color = cfg.color[data.levels.length];
         i++;
         universe += d.value;
         max = Math.max(max, d.value);
     });
     
-    let svg = d3.select(graph)
-        .attr("width", width)
-        .attr("height", height)
+    let svg = d3.select(id)
+        .attr("width", cfg.width)
+        .attr("height", cfg.height)
         .append("g")
-            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+            .attr("transform", "translate(" + cfg.width / 2 + "," + cfg.height / 2 + ")");
 
     svg.call(tip);
     
     svg.append("svg:text")
-        .attr("transform", "translate(0," + (-height / 2) + ")")
+        .attr("transform", "translate(0," + (-cfg.height / 2) + ")")
         .attr("x", 10)
         .attr("y", 10)
         .attr("dy", ".35em")
         .attr("text-anchor", "middle") // text-align: right
         .text("Avg. of " + data.skill + (data.context!=="overall" ?  (" of " + data.targetname) : "") + ". Universe of " + universe + " people.");
         
+    arc.innerRadius(cfg.innerRadius);
     arc.outerRadius(function (d) { 
-        return (radius - innerRadius) * (d.data.value / max) + innerRadius; 
+        return (cfg.radius - cfg.innerRadius) * (d.data.value / max) + cfg.innerRadius; 
     });
   
     let path = svg.selectAll(".solidArc")

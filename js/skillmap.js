@@ -1,9 +1,23 @@
 $(window).ready(function() {
-	asterInit("#demo1a", demo1a);
-    asterInit("#demo1b", demo1b);
+    let asterChartOptions = {
+        /*
+        width: 300,
+        height: 300,
+        radius: (300 / 2) * 0.8,
+        innerRadius: (300 / 2) * 0.24,
+        */
+    };
+    AsterChart("#demo1a", demo1a, asterChartOptions);
+    AsterChart("#demo1b", demo1b, asterChartOptions);
     
-    bubbleInit("#demo2a", demo2a);
-    bubbleInit("#demo2b", demo2b);
+    let bubbleChartOptions = {
+	    diameter: 450,
+	    scale: 18,
+	    format: d3.format(",d"),
+	    color: d3.scale.category20()
+	};
+    BubbleChart("#demo2a", demo2a, bubbleChartOptions);
+    BubbleChart("#demo2b", demo2b, bubbleChartOptions);
     
     let margin = {top: 50, right: 50, bottom: 50, left: 50};                
     let radarChartOptions = {
