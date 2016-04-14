@@ -4,31 +4,49 @@ var app = express();
 if(typeof require !== 'undefined') XLSX = require('xlsx');
 var workbook = XLSX.readFile('data/skills.xls');
 
-function to_json(worksheet) {
+function loadJson(sheetname) {
+    var worksheet = workbook.Sheets[sheetname];
 	return XLSX.utils.sheet_to_row_object_array(worksheet);
 }
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 app.get('/', function (req, res) {
   res.send('Hello World!');
 });
 
+//
+// Raw Data
+//
 app.get('/groups', function (req, res) {
-    var worksheet = workbook.Sheets[workbook.SheetNames[1]];
-
-    res.send(to_json(worksheet));
+    res.send(loadJson('Groups'));
 });
 
 app.get('/domains', function (req, res) {
-    var worksheet = workbook.Sheets[workbook.SheetNames[2]];
-
-    res.send(to_json(worksheet));
+    res.send(loadJson('Domains'));
 });
 
 app.get('/skills', function (req, res) {
-    var worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    res.send(loadJson('Skills'));
+});
 
-    res.send(to_json(worksheet));
-})
+app.get('/people', function (req, res) {
+    res.send(loadJson('People'));
+});
+
+app.get('/departments', function (req, res) {
+    res.send(loadJson('Departments'));
+});
+
+app.get('/data', function (req, res) {
+    res.send(loadJson('Data'));
+});
+
+
 
 var server = app.listen(8081, function () {
 
