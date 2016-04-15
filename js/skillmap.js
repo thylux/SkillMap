@@ -1,4 +1,32 @@
+function loadSelects() {
+    d3.json("http://localhost:8081/domains", function(error,response) {
+        response.forEach(function(d) {
+            $('#domains').append('<option value="' + d.id + '">' + d.name + '</option>');
+        });
+    });
+    
+    d3.json("http://localhost:8081/groups", function(error,response) {
+        response.forEach(function(d) {
+            $('#groups').append('<option value="' + d.id + '">' + d.name + '</option>');
+        });
+    });
+    
+    d3.json("http://localhost:8081/skills", function(error,response) {
+        response.forEach(function(d) {
+            $('#skills').append('<option value="' + d.name + '">' + d.name + '</option>');
+        });
+    });
+    
+    d3.json("http://localhost:8081/people", function(error,response) {
+        response.forEach(function(d) {
+            $('#people').append('<option value="' + d.name + '">' + d.name + '</option>');
+        });
+    });
+}
+
 $(window).ready(function() {
+    loadSelects();
+    
     let asterChartOptions = {
         /*
         width: 300,
