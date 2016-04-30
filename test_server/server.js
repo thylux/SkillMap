@@ -1,13 +1,8 @@
 var express = require('express');
 var app = express();
 
-if(typeof require !== 'undefined') XLSX = require('xlsx');
-var workbook = XLSX.readFile('data/skills.xls');
-
-function loadJson(sheetname) {
-    var worksheet = workbook.Sheets[sheetname];
-	return XLSX.utils.sheet_to_row_object_array(worksheet);
-}
+var sqlite3 = require('sqlite3').verbose();
+var db = new sqlite3.Database('data/skillmap.db');
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -22,28 +17,49 @@ app.get('/', function (req, res) {
 //
 // Raw Data
 //
+function createResponse(res,err,rows) {
+    if(err!==null) {
+        res.send(err.message);
+    }
+    else {
+        res.send(rows);
+    };
+};
+
 app.get('/groups', function (req, res) {
-    res.send(loadJson('Groups'));
+    db.all('SELECT * FROM groups', function(err,rows){
+      createResponse(res,err,rows);
+    });
 });
 
 app.get('/domains', function (req, res) {
-    res.send(loadJson('Domains'));
+    db.all('SELECT * FROM domains', function(err,rows){
+      createResponse(res,err,rows);
+    });
 });
 
 app.get('/skills', function (req, res) {
-    res.send(loadJson('Skills'));
+    db.all('SELECT * FROM skills', function(err,rows){
+      createResponse(res,err,rows);
+    });
 });
 
 app.get('/people', function (req, res) {
-    res.send(loadJson('People'));
+    db.all('SELECT * FROM people', function(err,rows){
+      createResponse(res,err,rows);
+    });
 });
 
 app.get('/departments', function (req, res) {
-    res.send(loadJson('Departments'));
+    db.all('SELECT * FROM departments', function(err,rows){
+      createResponse(res,err,rows);
+    });
 });
 
-app.get('/data', function (req, res) {
-    res.send(loadJson('Data'));
+app.get('/skillset', function (req, res) {
+    db.all('SELECT * FROM skillset', function(err,rows){
+      createResponse(res,err,rows);
+    });
 });
 
 

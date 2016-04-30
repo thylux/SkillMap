@@ -1,3 +1,5 @@
 private.txt
 test_server/data/skills.xls
 test_server/node_modules/*
+test_server/vendor/
+.vscode/launch.json
