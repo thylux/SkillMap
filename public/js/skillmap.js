@@ -1,32 +1,38 @@
 function loadSelects() {
     d3.json("http://localhost:8081/domains", function(error,response) {
+        if (error) return console.warn(error);
+        
         response.forEach(function(d) {
-            $('#domains').append('<option value="' + d.id + '">' + d.name + '</option>');
+            $('select[name="domains"]').append('<option value="' + d.id + '">' + d.name + '</option>');
         });
     });
     
     d3.json("http://localhost:8081/groups", function(error,response) {
+        if (error) return console.warn(error);
+        
         response.forEach(function(d) {
-            $('#groups').append('<option value="' + d.id + '">' + d.name + '</option>');
+            $('select[name="groups"]').append('<option value="' + d.id + '">' + d.name + '</option>');
         });
     });
     
     d3.json("http://localhost:8081/skills", function(error,response) {
+        if (error) return console.warn(error);
+        
         response.forEach(function(d) {
-            $('#skills').append('<option value="' + d.name + '">' + d.name + '</option>');
+            $('select[name="skills"]').append('<option value="' + d.id + '">' + d.name + '</option>');
         });
     });
     
     d3.json("http://localhost:8081/people", function(error,response) {
+        if (error) return console.warn(error);
+        
         response.forEach(function(d) {
-            $('#people').append('<option value="' + d.name + '">' + d.name + '</option>');
+            $('select[name="people"]').append('<option value="' + d.id + '">' + d.name + '</option>');
         });
     });
 }
 
-$(window).ready(function() {
-    loadSelects();
-    
+function loadAster() {
     let asterChartOptions = {
         /*
         width: 300,
@@ -35,8 +41,20 @@ $(window).ready(function() {
         innerRadius: (300 / 2) * 0.24,
         */
     };
+    
+    $('.demo1b').change(function() {
+        let skill = $('.demo1b skills').val();
+        let group = $('.demo1b groups').val();
+        AsterChart("#demo1b", demo1b, asterChartOptions);
+    });
+    
     AsterChart("#demo1a", demo1a, asterChartOptions);
-    AsterChart("#demo1b", demo1b, asterChartOptions);
+    
+}
+
+$(window).ready(function() {
+    loadSelects();
+    loadAster();
     
     let bubbleChartOptions = {
 	    diameter: 450,

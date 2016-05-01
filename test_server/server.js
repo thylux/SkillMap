@@ -4,11 +4,7 @@ var app = express();
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('data/skillmap.db');
 
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
+app.use(express.static('../public'));
 
 app.get('/', function (req, res) {
   res.send('Hello World!');
@@ -22,36 +18,36 @@ function createResponse(res,err,rows) {
         res.send(err.message);
     }
     else {
-        res.send(rows);
+        res.json(rows);
     };
 };
 
 app.get('/groups', function (req, res) {
-    db.all('SELECT * FROM groups', function(err,rows){
+    db.all('SELECT id, name FROM groups', function(err,rows){
       createResponse(res,err,rows);
     });
 });
 
 app.get('/domains', function (req, res) {
-    db.all('SELECT * FROM domains', function(err,rows){
+    db.all('SELECT id, name FROM domains', function(err,rows){
       createResponse(res,err,rows);
     });
 });
 
 app.get('/skills', function (req, res) {
-    db.all('SELECT * FROM skills', function(err,rows){
+    db.all('SELECT id, name FROM skills', function(err,rows){
       createResponse(res,err,rows);
     });
 });
 
 app.get('/people', function (req, res) {
-    db.all('SELECT * FROM people', function(err,rows){
+    db.all('SELECT id, name FROM people', function(err,rows){
       createResponse(res,err,rows);
     });
 });
 
 app.get('/departments', function (req, res) {
-    db.all('SELECT * FROM departments', function(err,rows){
+    db.all('SELECT id, name FROM departments', function(err,rows){
       createResponse(res,err,rows);
     });
 });
