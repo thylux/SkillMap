@@ -29,6 +29,22 @@ function AsterChart(id, data, options) {
 	  }//for i
 	}//if
     
+    // Clean before redraw
+    d3.select(id).selectAll('*').remove();
+    
+    let svg = d3.select(id)
+        .attr("width", cfg.width)
+        .attr("height", cfg.height)
+        .append("g")
+            .attr("transform", "translate(" + cfg.width / 2 + "," + cfg.height / 2 + ")");
+            
+    if(data==undefined || data=="") {
+        svg.append("text")
+            .attr("text-anchor", "middle")
+            .text("Sem dados para apresentar");
+        return;  
+    };
+    
     let i = 0;
     let universe = 0, max = 0;
     
@@ -40,17 +56,11 @@ function AsterChart(id, data, options) {
     
     data.levels.forEach(function(d) {
         d.color = rainbow(data.levels.length, i);
-        //d.color = cfg.color[data.levels.length];
+        //d.color = cfg.color[i%10];
         i++;
         universe += d.value;
         max = Math.max(max, d.value);
     });
-    
-    let svg = d3.select(id)
-        .attr("width", cfg.width)
-        .attr("height", cfg.height)
-        .append("g")
-            .attr("transform", "translate(" + cfg.width / 2 + "," + cfg.height / 2 + ")");
 
     svg.call(tip);
     
@@ -60,7 +70,7 @@ function AsterChart(id, data, options) {
         .attr("y", 10)
         .attr("dy", ".35em")
         .attr("text-anchor", "middle") // text-align: right
-        .text("Avg. of " + data.skill + (data.context!=="overall" ?  (" of " + data.targetname) : "") + ". Universe of " + universe + " people.");
+        .text("Universe of " + universe + " people.");
         
     arc.innerRadius(cfg.innerRadius);
     arc.outerRadius(function (d) { 

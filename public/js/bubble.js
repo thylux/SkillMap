@@ -20,7 +20,7 @@ function BubbleChart(id, data, options) {
     
     data.skills.forEach(function(d) {
         d.id = universe++;
-        d.color = rainbow(data.skills.length, i);
+        d.color = rainbow(data.skills.length, universe);
     });
     
     let svg = d3.select(id)
