@@ -2,6 +2,26 @@
  * Adapted from http://bl.ocks.org/bbest/2de0e25d4840c68f2db1
  */
 
+/* Data Format
+{
+ 'skill': 'skill1',
+ 'context': 'overall' | 'group',
+ 'targetname': 'group1',
+ 'levels': [
+	{
+        'id': 0,
+        'name': 'level_name1',
+        'value': 60
+    },
+    {
+        'id': 1,
+        'name': 'level_name2',
+        'value': 100
+    }
+ ]
+}
+*/
+
 var pie = d3.layout.pie()
     .sort(null)
     .value(function(d) { return 1; });
@@ -41,7 +61,7 @@ function AsterChart(id, data, options) {
     if(data==undefined || data=="") {
         svg.append("text")
             .attr("text-anchor", "middle")
-            .text("Sem dados para apresentar");
+            .text("No data available");
         return;  
     };
     

@@ -1,6 +1,20 @@
 function loadEmptyOption(select, allowSelection) {
     allowSelection = allowSelection || false;
+    //select.append('<option disabled selected value>Escolha um valor...</option>');
     select.append('<option selected value>Escolha um valor...</option>');  
+};
+
+function loadPeople(control, department) {
+    department = department || "";
+    
+    control.empty();
+    
+    d3.json("people/"+department, function(error,response) {
+        loadEmptyOption(control);
+        response.forEach(function(d) {
+            control.append('<option value="' + d.id + '">' + d.name + '</option>');
+        });
+    });
 };
 
 function loadSelects() {
@@ -25,12 +39,7 @@ function loadSelects() {
         });
     });
     
-    d3.json("people", function(error,response) {
-        loadEmptyOption($('select[name="people"]'));
-        response.forEach(function(d) {
-            $('select[name="people"]').append('<option value="' + d.id + '">' + d.name + '</option>');
-        });
-    });
+    loadPeople($('select[name="people"]'));
     
     d3.json("departments", function(error,response) {
         loadEmptyOption($('select[name="departments"]'));
@@ -49,12 +58,10 @@ function loadSelects() {
 
 function loadAster() {
     let asterChartOptions = {
-        /*
-        width: 300,
-        height: 300,
-        radius: (300 / 2) * 0.8,
-        innerRadius: (300 / 2) * 0.24,
-        */
+        width: 200,
+        height: 200,
+        radius: (200 / 2) * 0.8,
+        innerRadius: (200 / 2) * 0.24,
     };
     
     $('.demo1').change(function() {
@@ -70,17 +77,53 @@ function loadAster() {
     AsterChart("#demo1", undefined, asterChartOptions);
 };
 
-$(window).ready(function() {
-    loadSelects();
-    loadAster();
-    
+function loadBubble() {
     let bubbleChartOptions = {
-	    diameter: 450,
-	    scale: 18,
+	    height: window.innerHeight,
+        width: window.innerWidth*0.45,
+        padding: 5,
 	    format: d3.format(",d"),
 	    color: d3.scale.category20()
 	};
-    BubbleChart("#demo2", demo2a, bubbleChartOptions);
+    
+    $('.demo2a').change(function() {
+        let group = $('#demo2a_groups option:selected').val();
+        let person = $('#demo2a_people option:selected').val();
+        
+        person = person || "";
+        group = group || "";
+        
+        if(person !== "" && group !== "") {
+            d3.json("strengths/"+group+'?person='+person, function(error,response) {
+                if(error!==null) console.log(error.message);
+                BubbleChart("#demo2a", response, bubbleChartOptions);
+            });
+        }
+    });
+    
+    $('.demo2b').change(function() {
+        let group = $('#demo2b_groups option:selected').val();
+        let dep = $('#demo2b_departments option:selected').val();
+        
+        dep = dep || "";
+        group = group || "";
+        
+        if(dep !== "" && group !== "") {
+            d3.json("strengths/"+group+'?department='+dep, function(error,response) {
+                if(error!==null) console.log(error.message);
+                BubbleChart("#demo2b", response, bubbleChartOptions);
+            });
+        }
+    });
+    
+    BubbleChart("#demo2a", undefined, bubbleChartOptions);
+    BubbleChart("#demo2b", undefined, bubbleChartOptions);
+};
+
+$(window).ready(function() {
+    loadSelects();
+    loadAster();
+    loadBubble();
     
     let margin = {top: 50, right: 50, bottom: 50, left: 50};                
     let radarChartOptions = {

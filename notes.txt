@@ -2,6 +2,7 @@ Designs:
 
 Circle 1: 	http://prcweb.co.uk/circularheatchart/
 Circle 2: 	http://bl.ocks.org/nicgirault/777c8f74aaf95e46d7e7
+Circle 3:   http://bl.ocks.org/mbostock/4063530
 Sunburst: 	http://bl.ocks.org/wizicer/f662a0b04425fc0f7489
 Bubble 1: 	http://bl.ocks.org/phuonghuynh/54a2f97950feadb45b07
 Bubble 2:	https://bl.ocks.org/mbostock/4063269
@@ -10,32 +11,6 @@ Radar 2:  	http://bl.ocks.org/davidwclin/ad5d13db260caeffe9b3
 Radar 3:  	http://bl.ocks.org/nbremer/21746a9668ffdf6d8242
 
 Visualizations:
-Number of people with particular skill (r1) --> demo1
-{
- 'skill': 'skill1',
- 'context': 'overall' | 'group',
- 'targetname': 'group1',
- 'levels': [
-	{
-        'id': 0,
-        'name': 'level_name1',
-        'value': 60
-    },
-    {
-        'id': 1,
-        'name': 'level_name2',
-        'value': 100
-    }
- ]}
-
-Strenghts of X [flat list of skills] (b2) --> demo2
-{
- 'context': 'personal' | 'group' | 'overall',
- 'targetname': '',
- 'skills': [
-	{'name': 'skill_name1', 'value': 1},
-	{'name': 'skill_name2', 'value': 5}
- ]}
  
 Strenghts comparison [compare group of skills] (r3) --> demo3
 {
