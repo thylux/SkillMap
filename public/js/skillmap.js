@@ -4,12 +4,12 @@ function loadEmptyOption(select, allowSelection) {
     select.append('<option selected value>Escolha um valor...</option>');  
 };
 
-function loadPeople(control, department) {
-    department = department || "";
+function loadPeople(control, person) {
+    person = person || "";
     
     control.empty();
     
-    d3.json("people/"+department, function(error,response) {
+    d3.json("people/"+person, function(error,response) {
         loadEmptyOption(control);
         response.forEach(function(d) {
             control.append('<option value="' + d.id + '">' + d.name + '</option>');
@@ -120,20 +120,79 @@ function loadBubble() {
     BubbleChart("#demo2b", undefined, bubbleChartOptions);
 };
 
-$(window).ready(function() {
-    loadSelects();
-    loadAster();
-    loadBubble();
-    
+function loadRadar() {
     let margin = {top: 50, right: 50, bottom: 50, left: 50};                
     let radarChartOptions = {
-        w: Math.min(500, window.innerWidth - 10) - margin.left - margin.right,
-        h: Math.min(500, window.innerHeight - margin.top - margin.bottom - 20),
+        w: 300,
+        h: 300,
         margin: margin,
-        levels: 5,
+        levels: 6,
         roundStrokes: true,
         color: d3.scale.ordinal().range(["#EDC951","#CC333F","#00A0B0"])
     };
-    RadarChart("#demo3a", demo3a, radarChartOptions);
-    RadarChart("#demo3b", demo3b, radarChartOptions);
+    
+    $('.demo3a').change(function() {
+        let group = $('#demo3a_groups option:selected').val();
+        let department1 = $('#demo3a_departments1 option:selected').val();
+        let department2 = $('#demo3a_departments2 option:selected').val();
+        let department3 = $('#demo3a_departments3 option:selected').val();
+        
+        department1 = department1 || "";
+        department2 = department2 || "";
+        department3 = department3 || "";
+        group = group || "";
+        
+        if(department1 !== "" && group !== "") {
+            var query = '?department1='+department1;
+            if(department2 !== "") {
+                query += '&department2='+department2;
+            }
+            if(department3 !== "") {
+                query += '&department3='+department3;
+            }
+            
+            d3.json("compare/"+group+query, function(error,response) {
+                if(error!==null) console.log(error.message);
+                RadarChart("#demo3a", response, radarChartOptions);
+            });
+        }
+    });
+    
+    $('.demo3b').change(function() {
+        let group = $('#demo3b_groups option:selected').val();
+        let person1 = $('#demo3b_people1 option:selected').val();
+        let person2 = $('#demo3b_people2 option:selected').val();
+        let person3 = $('#demo3b_people3 option:selected').val();
+        
+        person1 = person1 || "";
+        person2 = person2 || "";
+        person3 = person3 || "";
+        group = group || "";
+        
+        if(person1 !== "" && group !== "") {
+            var query = '?person1='+person1;
+            if(person2 !== "") {
+                query += '&person2='+person2;
+            }
+            if(person3 !== "") {
+                query += '&person3='+person3;
+            }
+            
+            d3.json("compare/"+group+query, function(error,response) {
+                if(error!==null) console.log(error.message);
+                RadarChart("#demo3b", response, radarChartOptions);
+            });
+        }
+    });
+    
+    RadarChart("#demo3a", undefined, radarChartOptions);
+    RadarChart("#demo3b", undefined, radarChartOptions);
+};
+
+$(window).ready(function() {
+    loadSelects();
+    
+    loadAster();
+    loadBubble();
+    loadRadar();
 });

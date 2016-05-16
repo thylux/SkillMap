@@ -6,6 +6,22 @@
 /////////////////////////////////////////////////////////
 /////////// Adapted to SkillMap by thylux ///////////////
 /////////////////////////////////////////////////////////
+
+/* Data Format
+{
+ 'context': 'personal' | 'group',
+ 'targetnames': ['target1', 'target2', 'target3'],
+ 'skill_group': 'skill_group1',
+ 'skills': [
+	{'name': 'skill_name1', 'values': [1,3,5]},
+	{'name': 'skill_name2', 'values': [5,5,5]},
+    {'name': 'skill_name3', 'values': [1,3,3]},
+    {'name': 'skill_name4', 'values': [4,5,5]},
+    {'name': 'skill_name5', 'values': [1,1,2]},
+    {'name': 'skill_name6', 'values': [5,3,1]},
+ ]
+}
+ */
 	
 function RadarChart(id, data, options) {
 	var cfg = {
@@ -29,7 +45,34 @@ function RadarChart(id, data, options) {
 		if('undefined' !== typeof options[i]){ cfg[i] = options[i]; }
 	  }//for i
 	}//if
+		
+	/////////////////////////////////////////////////////////
+	//////////// Create the container SVG and g /////////////
+	/////////////////////////////////////////////////////////
 	
+	// Clean before redraw
+    d3.select(id).selectAll('*').remove();
+
+	//Initiate the radar chart SVG
+	var svg = d3.select(id)
+			.attr("width",  cfg.w + cfg.margin.left + cfg.margin.right)
+			.attr("height", cfg.h + cfg.margin.top + cfg.margin.bottom)
+			.attr("class", "radar");
+	//Append a g element		
+	var g = svg.append("g")
+			.attr("transform", "translate(" + (cfg.w/2 + cfg.margin.left) + "," + (cfg.h/2 + cfg.margin.top) + ")");
+			
+	/////////////////////////////////////////////////////////
+	//////////// Initialize controls and data ///////////////
+	/////////////////////////////////////////////////////////
+			
+	if(data==undefined || data=="") {
+        g.append("text")
+            .attr("text-anchor", "middle")
+            .text("No data available");
+        return;  
+    };
+			
 	var allAxis = (data.skills.map(function(i, j){return i.name})),	//Names of each axis
 		total = allAxis.length,					//The number of different axes
         targets = data.targetnames.length,      //The number of comparison targets
@@ -41,19 +84,6 @@ function RadarChart(id, data, options) {
 	var rScale = d3.scale.linear()
 		.range([0, radius])
 		.domain([0, cfg.levels]);
-		
-	/////////////////////////////////////////////////////////
-	//////////// Create the container SVG and g /////////////
-	/////////////////////////////////////////////////////////
-
-	//Initiate the radar chart SVG
-	var svg = d3.select(id)
-			.attr("width",  cfg.w + cfg.margin.left + cfg.margin.right)
-			.attr("height", cfg.h + cfg.margin.top + cfg.margin.bottom)
-			.attr("class", "radar");
-	//Append a g element		
-	var g = svg.append("g")
-			.attr("transform", "translate(" + (cfg.w/2 + cfg.margin.left) + "," + (cfg.h/2 + cfg.margin.top) + ")");
 	
 	/////////////////////////////////////////////////////////
 	////////// Glow filter for some extra pizzazz ///////////
