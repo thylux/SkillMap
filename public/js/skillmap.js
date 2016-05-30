@@ -78,54 +78,79 @@ function loadAster() {
 };
 
 function loadBubble() {
-    let bubbleChartOptions = {
-	    height: window.innerHeight,
-        width: window.innerWidth*0.45,
+    let bubbleChartOptions1 = {
+	    height: window.innerWidth * 0.95,
+        width: window.innerWidth * 0.95,
+        padding: 5,
+	    format: d3.format(",d"),
+	    color: d3.scale.category20()
+	};
+    
+    let bubbleChartOptions2 = {
+	    height: window.innerWidth * 0.45,
+        width: window.innerWidth * 0.45,
         padding: 5,
 	    format: d3.format(",d"),
 	    color: d3.scale.category20()
 	};
     
     $('.demo2a').change(function() {
-        let group = $('#demo2a_groups option:selected').val();
         let person = $('#demo2a_people option:selected').val();
         
         person = person || "";
-        group = group || "";
         
-        if(person !== "" && group !== "") {
-            d3.json("strengths/"+group+'?person='+person, function(error,response) {
+        if(person !== "") {
+            d3.json("strengths/?person="+person, function(error,response) {
                 if(error!==null) console.log(error.message);
-                BubbleChart("#demo2a", response, bubbleChartOptions);
+                BubbleChart("#demo2a", response, bubbleChartOptions1);
             });
         }
     });
     
+    //bubbleChartOptions.width = 600;
+    
     $('.demo2b').change(function() {
-        let group = $('#demo2b_groups option:selected').val();
+        let domain = $('#demo2b_domains option:selected').val();
         let dep = $('#demo2b_departments option:selected').val();
         
         dep = dep || "";
-        group = group || "";
+        domain = domain || "";
         
-        if(dep !== "" && group !== "") {
-            d3.json("strengths/"+group+'?department='+dep, function(error,response) {
+        if(dep !== "" && domain !== "") {
+            d3.json("strengths/"+domain+'?department='+dep, function(error,response) {
                 if(error!==null) console.log(error.message);
-                BubbleChart("#demo2b", response, bubbleChartOptions);
+                BubbleChart("#demo2b", response, bubbleChartOptions2);
             });
         }
     });
     
-    BubbleChart("#demo2a", undefined, bubbleChartOptions);
-    BubbleChart("#demo2b", undefined, bubbleChartOptions);
+    $('.demo2c').change(function() {
+        let domain = $('#demo2c_domains option:selected').val();
+        let person = $('#demo2c_people option:selected').val();
+        
+        person = person || "";
+        domain = domain || "";
+        
+        if(person !== "" && domain !== "") {
+            d3.json("strengths/"+domain+'?person='+person, function(error,response) {
+                if(error!==null) console.log(error.message);
+                BubbleChart("#demo2c", response, bubbleChartOptions2);
+            });
+        }
+    });
+    
+    BubbleChart("#demo2a", undefined, bubbleChartOptions1);
+    BubbleChart("#demo2b", undefined, bubbleChartOptions2);
+    BubbleChart("#demo2c", undefined, bubbleChartOptions2);
 };
 
 function loadRadar() {
-    let margin = {top: 50, right: 50, bottom: 50, left: 50};                
+    let margin = {top: 75, right: 75, bottom: 75, left: 75};                
     let radarChartOptions = {
-        w: 300,
-        h: 300,
+        w: window.innerWidth * 0.30,
+        h: window.innerWidth * 0.30,
         margin: margin,
+        labelFactor: 1.1,
         levels: 6,
         roundStrokes: true,
         color: d3.scale.ordinal().range(["#EDC951","#CC333F","#00A0B0"])

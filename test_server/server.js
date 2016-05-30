@@ -49,7 +49,7 @@ app.get('/people', function (req, res) {
 app.get('/people/:department', function (req, res) {
     var department = req.params.department;
     
-    db.all('SELECT id, name FROM people WHERE departmentid = ?  ORDER BY name', department, function(err,rows){
+    db.all('SELECT id, name FROM people WHERE departmentid = ? ORDER BY name', department, function(err,rows){
       createResponse(res,err,rows);
     });
 });
@@ -90,7 +90,8 @@ app.get('/skillavg/:skill', function (req, res) {
     response.context = 'overall';
     response.targetname = '';
     
-    db.all('SELECT s.value AS id, sl.name AS name, COUNT(s.value) AS value FROM skillset s ' +
+    db.all('SELECT s.value AS id, sl.name AS name, COUNT(s.value) AS value ' +
+            'FROM skillset s ' +
             'INNER JOIN skilllevels sl ON sl.id=s.value ' +
             'WHERE skillid = ? GROUP BY value', skill, function(err,rows) {
         createResponse(res,err,compose(response,'levels',rows));
@@ -112,7 +113,8 @@ app.get('/skillavg/:skill/:department', function (req, res) {
         }
     });
     
-    db.all('SELECT s.value AS id, sl.name AS name, COUNT(s.value) AS value FROM skillset s ' +
+    db.all('SELECT s.value AS id, sl.name AS name, COUNT(s.value) AS value ' + 
+            'FROM skillset s ' +
             'INNER JOIN people p ON s.personid=p.id ' +
             'INNER JOIN skilllevels sl ON sl.id=s.value ' +
             'WHERE skillid = ? and departmentid = ? ' +
@@ -121,8 +123,59 @@ app.get('/skillavg/:skill/:department', function (req, res) {
     });
 });
 
-app.get('/strengths/:group', function (req, res) {
-    var group = req.params.group || "";
+app.get('/strengths/', function (req, res) {
+    var person = req.query.person || "";
+    var department = req.query.department || "";
+    
+    var response = {};
+    response.targetname = '';
+    
+    var query = 'SELECT s.name, sl.name AS label, AVG(ss.value) AS value ' +
+                'FROM skillset ss ' +
+                'INNER JOIN skilllevels sl ON sl.id=ss.value ' +
+                'INNER JOIN skills s ON ss.skillid=s.id ';
+    
+    if(person !== "") {
+        response.context = 'overall';
+        
+        db.get('SELECT name FROM people WHERE id = ? ORDER BY name', person, function(err,rows) {
+            if(err==null) {
+                response.targetname=rows.name;
+            }
+        });
+        
+        db.all(query +
+                'WHERE ss.personid = ? GROUP BY s.name', person, function(err,rows) {
+            createResponse(res,err,compose(response,'skills',rows));
+        });
+    }
+    else if(department !== "") {
+        response.context = 'overall';
+        
+        db.get('SELECT name FROM departments WHERE id = ? ORDER BY name', department, function(err,rows) {
+            if(err==null) {
+                response.targetname=rows.name;
+            }
+        });
+        
+        db.all(query +
+                'INNER JOIN people p ON ss.personid=p.id ' +
+                'WHERE p.departmentid = ? GROUP BY s.name', department, function(err,rows) {
+            createResponse(res,err,compose(response,'skills',rows));
+        });
+    }
+    else {
+        response.context = 'overall';
+        
+        db.all(query +
+                ' GROUP BY s.name', null, function(err,rows) {
+            createResponse(res,err,compose(response,'skills',rows));
+        });
+    }
+});
+
+app.get('/strengths/:domain', function (req, res) {
+    var domain = req.params.domain || "";
     var person = req.query.person || "";
     var department = req.query.department || "";
     
@@ -133,7 +186,7 @@ app.get('/strengths/:group', function (req, res) {
                 'FROM skillset ss ' +
                 'INNER JOIN skilllevels sl ON sl.id=ss.value ' +
                 'INNER JOIN skills s ON ss.skillid=s.id ' +
-                'INNER JOIN domainsgroupsskills dgs ON dgs.skillid=s.id ';
+                'INNER JOIN groups g ON s.groupid=g.id ';
     
     if(person !== "") {
         response.context = 'personal';
@@ -145,7 +198,7 @@ app.get('/strengths/:group', function (req, res) {
         });
         
         db.all(query +
-                'WHERE dgs.groupid = ? AND ss.personid = ? GROUP BY s.name', [group, person], function(err,rows) {
+                'WHERE g.domainid = ? AND ss.personid = ? GROUP BY s.name', [domain, person], function(err,rows) {
             createResponse(res,err,compose(response,'skills',rows));
         });
     }
@@ -160,7 +213,7 @@ app.get('/strengths/:group', function (req, res) {
         
         db.all(query +
                 'INNER JOIN people p ON ss.personid=p.id ' +
-                'WHERE dgs.groupid = ? AND p.departmentid = ? GROUP BY s.name', [group, department], function(err,rows) {
+                'WHERE g.domainid = ? AND p.departmentid = ? GROUP BY s.name', [domain, department], function(err,rows) {
             createResponse(res,err,compose(response,'skills',rows));
         });
     }
@@ -168,7 +221,7 @@ app.get('/strengths/:group', function (req, res) {
         response.context = 'overall';
         
         db.all(query +
-                'WHERE dgs.groupid = ? AND GROUP BY s.name', group, function(err,rows) {
+                'WHERE g.domainid = ? AND GROUP BY s.name', domain, function(err,rows) {
             createResponse(res,err,compose(response,'skills',rows));
         });
     }
@@ -186,8 +239,7 @@ var get_person_skills = function(group, person, next, callback) {
                 'FROM skillset ss ' +
                 'INNER JOIN skilllevels sl ON sl.id=ss.value ' +
                 'INNER JOIN skills s ON ss.skillid=s.id ' +
-                'INNER JOIN domainsgroupsskills dgs ON dgs.skillid=s.id ' +
-                'WHERE dgs.groupid = ? AND ss.personid = ? GROUP BY s.name', [group, person], callback);
+                'WHERE s.groupid = ? AND ss.personid = ? GROUP BY s.name', [group, person], callback);
     }
     else
         // let express know we are ready for the next function
@@ -206,9 +258,8 @@ var get_department_skills = function(group, department, next, callback) {
                 'FROM skillset ss ' +
                 'INNER JOIN skilllevels sl ON sl.id=ss.value ' +
                 'INNER JOIN skills s ON ss.skillid=s.id ' +
-                'INNER JOIN domainsgroupsskills dgs ON dgs.skillid=s.id ' +
                 'INNER JOIN people p ON ss.personid=p.id ' +
-                'WHERE dgs.groupid = ? AND p.departmentid = ? GROUP BY s.name', [group, department], callback);
+                'WHERE s.groupid = ? AND p.departmentid = ? GROUP BY s.name', [group, department], callback);
     }
     else
         // let express know we are ready for the next function
